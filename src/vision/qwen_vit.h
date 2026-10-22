@@ -31,7 +31,7 @@ struct QwenViTConfig {
 // [min_pixels, max_pixels], aspect ratio kept (Qwen2-VL smart_resize, Python's rounding). Throws Error past 200:1.
 std::pair<int, int> qwen_smart_resize(int h, int w, int factor, long min_pixels, long max_pixels);
 // PIL's Image.resize(..., BICUBIC) of 8-bit RGB rows, to the bit (Pillow's fixed-point two-pass resampling).
-std::vector<uint8_t> pil_resize_bicubic(const std::vector<uint8_t>& rgb, int w, int h, int ow, int oh);
+PixelBuffer pil_resize_bicubic(const std::vector<uint8_t>& rgb, int w, int h, int ow, int oh);
 
 class QwenViT : public ImageEncoder {
  public:

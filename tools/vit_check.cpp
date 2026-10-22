@@ -237,7 +237,7 @@ int main(int argc, char** argv) {
       const int w = atoi(argv[3]), h = atoi(argv[4]), ow = atoi(argv[5]), oh = atoi(argv[6]);
       if (raw.size() != size_t(w) * h * 3) fatal("resize: %zu bytes for %d x %d", raw.size(), w, h);
       const std::vector<uint8_t> in(raw.begin(), raw.end());
-      const std::vector<uint8_t> out = pil_resize_bicubic(in, w, h, ow, oh);
+      const auto out = pil_resize_bicubic(in, w, h, ow, oh);
       dump(argv[7], out.data(), out.size());
       return 0;
     }

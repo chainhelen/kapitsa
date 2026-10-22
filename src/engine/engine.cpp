@@ -3254,7 +3254,7 @@ ChatResult Engine::chat(const ChatRequest& r, const std::function<bool(const Cha
   res.req_seq = requests_.load();
   slot.done_at = res.req_seq;
   if (!images.empty()) {  // for prefill_history: the images without their pixels
-    for (vision::Prepared& p : images) std::vector<uint8_t>().swap(p.pixels);
+    for (vision::Prepared& p : images) vision::PixelBuffer().swap(p.pixels);
     res.images = std::make_shared<const std::vector<vision::Prepared>>(std::move(images));
   }
   ChatDelta tail = parser.finish(finish == "stop");

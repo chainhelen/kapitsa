@@ -246,10 +246,10 @@ static void vpass(const uint8_t* src, int sw, int x0, int cols, const Coeffs& c,
   });
 }
 
-std::vector<uint8_t> pil_resize_bicubic(const std::vector<uint8_t>& rgb, int w, int h, int ow, int oh) {
-  if (ow == w && oh == h) return rgb;
+PixelBuffer pil_resize_bicubic(const std::vector<uint8_t>& rgb, int w, int h, int ow, int oh) {
+  if (ow == w && oh == h) return PixelBuffer(rgb.begin(), rgb.end());
   const Coeffs ch = precompute_coeffs(w, ow), cv = precompute_coeffs(h, oh);
-  std::vector<uint8_t> out;
+  PixelBuffer out;
   if (ow == w || oh == h) {  // one pass
     out.resize(size_t(ow) * oh * 3);
     if (ow != w) hpass(rgb.data(), w, 0, h, ch, ow, 0, out.data());
@@ -422,7 +422,7 @@ size_t QwenViT::work_bytes(const Prepared& p) const {
   const size_t H = size_t(c_.hidden), N = size_t(p.height / c_.patch) * size_t(p.width / c_.patch);
   const size_t rc = std::min<size_t>(N, kVitRowChunk);
   const size_t ym = std::max<size_t>(3 * H, inter_pad_);
-  return p.pixels.size() + N * H * 4 /* x */ + N * H * 2 /* xn */ + 3 * N * H * 2 /* q, k, v */ +
+  return pixel_buffer_bytes(p.pixels.size()) + N * H * 4 /* x */ + N * H * 2 /* xn */ + 3 * N * H * 2 /* q, k, v */ +
          rc * ym * 4 /* y */ + rc * inter_pad_ * 2 /* h */ + 64 * 1024 /* tables */;
 }
 
@@ -441,8 +441,10 @@ void QwenViT::encode(const Prepared& p, const Buffer& out) {
     scratch.push_back(g.alloc(bytes + 16, label));
     return scratch.back();
   };
-  Buffer pix = alloc(p.pixels.size(), "vit_pixels");
-  memcpy(pix.ptr(), p.pixels.data(), p.pixels.size());
+  // prepare() wrote directly into page-aligned CPU storage. It outlives cs.finish() and the wrapper's release below;
+  // qvit_patchify only reads it. No separate pixel buffer or memcpy before patchification.
+  Buffer pix = g.wrap(const_cast<uint8_t*>(p.pixels.data()), pixel_buffer_bytes(p.pixels.size()), "vit_pixels", true);
+  scratch.push_back(pix);
   Buffer lut = alloc(3 * 256 * 4, "vit_lut");
   build_lut(c_, lut.as<float>());
   // position-embedding interpolation per grid row / column: (floor, ceil, 1 - frac, frac), align corners

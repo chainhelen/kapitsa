@@ -11,6 +11,7 @@
 #include "metal/gpu.h"
 #include "vision/embed.h"
 #include "vision/image.h"
+#include "vision/pixel_buffer.h"
 
 #include <functional>
 #include <list>
@@ -27,7 +28,7 @@ struct Prepared {
   int grid_t = 1, grid_h = 0, grid_w = 0;  // its token grid (positions use it): tokens = grid_t * grid_h * grid_w
   Digest digest{};                         // the picture and the shape the processor gave it: equal digests, equal rows
   int width = 0, height = 0;               // the encoder's input size (after resizing)
-  std::vector<uint8_t> pixels;             // the encoder's input (QwenViT: resized RGB rows, RadioViT: half patch
+  PixelBuffer pixels;                      // the encoder's input (QwenViT: resized RGB rows, RadioViT: half patch
                                            // rows); empty when only the metadata came from the cache
                                            // (Vision::embeddings prepares it again)
 };
