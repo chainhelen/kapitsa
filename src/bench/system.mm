@@ -394,13 +394,19 @@ bool GpuLock::held_by_caller() {
   return false;
 }
 
-bool GpuLock::acquire(const std::function<void(const std::string&)>& waiting) {
+bool GpuLock::acquire(const std::function<void(const std::string&)>& waiting, bool block) {
   release();
   const std::string p = path();
   mkdir(p.substr(0, p.find_last_of('/')).c_str(), 0755);
   const int fd = open(p.c_str(), O_RDONLY | O_CREAT | O_CLOEXEC, 0644);
   if (fd < 0) return false;
   if (flock(fd, LOCK_EX | LOCK_NB) != 0) {
+    if (!block) {
+      const int e = errno;
+      close(fd);
+      errno = e;
+      return false;
+    }
     if (waiting) waiting(lock_holders(p));
     // block in flock() as lockf does: the kernel queues blocked waiters, so polling would lose every release to them
     while (flock(fd, LOCK_EX) != 0)

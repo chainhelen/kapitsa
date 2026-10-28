@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kapitsa-sdk"
+version = "0.1.0"
+description = "In-process Python bindings for Kapitsa on Apple Silicon"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+
+[tool.setuptools]
+packages = ["kapitsa_sdk"]

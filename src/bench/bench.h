@@ -218,9 +218,9 @@ class GpuLock {
   // are in use, the harnesses and tools having grown one each). Unset, empty or "0" means it does not.
   static bool held_by_caller();
   ~GpuLock() { release(); }
-  // Takes it: at once, or after calling waiting() with who holds it and blocking until they release it. False (errno
-  // set) when the file can't be opened.
-  bool acquire(const std::function<void(const std::string& holders)>& waiting = nullptr);
+  // By default, calls waiting() on contention and blocks until release. With block=false, returns immediately.
+  // False with errno set on failure (EWOULDBLOCK if busy and nonblocking).
+  bool acquire(const std::function<void(const std::string& holders)>& waiting = nullptr, bool block = true);
   void release();
   bool held() const { return fd_ >= 0; }
 

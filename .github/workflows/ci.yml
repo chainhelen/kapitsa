@@ -109,6 +109,7 @@ jobs:
         with:
           filters: |
             code:
+              - 'sdk/**'
               - 'src/**'
               - 'tools/**'
               - 'tests/**'
@@ -130,11 +131,29 @@ jobs:
         run: |
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j"$(sysctl -n hw.ncpu)" --target kapitsa systemone api_test bench_test update_test prefix_cache_test grammar_test structured_check fn_store_test fn_dflash_test dflash_accept_test tokenizer_test iq_layout_test exl3_test vision_pixels_test tree_reduce_test remote_test cluster_test split_place_test json_file_test execution_session_test http_stream_test splash_protocol_test splash_runtime_test splash_discover_test splash_plan_test logit_dump
+      - name: SDK C ABI contract
+        if: steps.changes.outputs.code == 'true'
+        run: |
+          cmake -S . -B build -DKAPITSA_BUILD_SDK=ON
+          cmake --build build -j"$(sysctl -n hw.ncpu)" --target sdk_contract_test
+          ctest --test-dir build -R '^sdk_contract_test$' --output-on-failure
+          diff <(nm -gUj build/libkapitsa_sdk.dylib | sort) <(sort sdk/c/exports.txt)
       - name: Python environment
         if: steps.changes.outputs.code == 'true'
         run: |
           python3 -m venv "$RUNNER_TEMP/venv"
-          "$RUNNER_TEMP/venv/bin/pip" install --quiet jsonschema
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet jsonschema ./sdk/python
+          cp sdk/python/test_sdk.py "$RUNNER_TEMP/test_sdk.py"
+          KAPITSA_LIBRARY="$PWD/build/libkapitsa_sdk.dylib" "$RUNNER_TEMP/venv/bin/python" "$RUNNER_TEMP/test_sdk.py"
+      - name: SDK Rust contract
+        if: steps.changes.outputs.code == 'true'
+        env:
+          RUSTUP_TOOLCHAIN: '1.95.0'
+          KAPITSA_LIB_DIR: ${{ github.workspace }}/build
+        run: |
+          rustup toolchain install 1.95.0 --profile minimal --component clippy
+          cargo test --manifest-path sdk/rust/Cargo.toml
+          cargo clippy --manifest-path sdk/rust/Cargo.toml --all-targets -- -D warnings
       - name: C++ tests
         if: steps.changes.outputs.code == 'true'
         run: build/api_test
