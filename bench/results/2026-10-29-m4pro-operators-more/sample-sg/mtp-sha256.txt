@@ -1,0 +1,1 @@
+c58feddc584f37971c72af1f0da95e0099478487009936b3c26ddd88844fab10  /Users/bytedance/.cache/kapitsa/models/qwen3.8-27b-4bit/mtp.safetensors

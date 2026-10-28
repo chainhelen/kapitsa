@@ -1,0 +1,4 @@
+[ 96%] Built target naceinfer
+[ 96%] Building CXX object CMakeFiles/sample_reduce_test.dir/tools/sample_reduce_test.cpp.o
+[100%] Linking CXX executable sample_reduce_test
+[100%] Built target sample_reduce_test
