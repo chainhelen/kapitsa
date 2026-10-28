@@ -586,7 +586,7 @@ class Engine {
   std::unique_ptr<minja::chat_template> tmpl_;
   std::vector<Slot> slots_;
   TurnLock turn_;            // the GPU turn: engine state and the model are used by its holder only
-  bool failed_ = false;      // a recovered pipeline error: discard this engine (under the turn)
+  std::atomic<bool> failed_{false};  // failure is cross-thread; model/batch cleanup still requires the turn
   void check_healthy() const;
   void fail_generation() noexcept;
   void abandon_batch();

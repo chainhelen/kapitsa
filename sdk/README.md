@@ -62,6 +62,11 @@ be incomplete. Submitted GPU work is drained, and the engine's state is not save
 prefix cache. Destroy **all** engine and request handles, then create a new engine to retry;
 the failed engine's GPU lock remains held until those handles are released.
 
+While an SDK allocation scope is alive, `Gpu::release` defers freeing buffers during
+exception unwinding, including calls from non-SDK threads. This process-wide condition
+keeps submitted work's unretained buffer references alive through queue drain and SDK
+allocation cleanup. It can extend buffer lifetimes on other threads in the host process.
+
 Other runtime fatal errors, including streamed-expert I/O after initial loading, can still
 terminate the host process. In particular, a failed live expert read must not unblock the GPU
 with incomplete weights.
