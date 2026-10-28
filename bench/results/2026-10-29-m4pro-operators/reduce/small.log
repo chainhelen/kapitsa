@@ -1,0 +1,30 @@
+2026-10-29 02:50:13.313 decode_reduce_test[23556:18698577] Metal API Validation Enabled
+2026-10-29 02:50:13.322 decode_reduce_test[23556:18698577] Metal GPU Validation Enabled
+[kapitsa] compiled kernels in 3685 ms
+GPU Apple M4 Pro, shared reduction static threadgroup bytes 4128
+Hq=24 R=1 splits=1: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=6.97e-08
+Hq=24 R=1 splits=1: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=6.97e-08
+Hq=24 R=1 splits=1: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=6.97e-08
+Hq=24 R=1 splits=1: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=6.97e-08
+Hq=24 R=1 splits=1: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=24 fp64_scaled_error=0
+Hq=24 R=1 splits=2: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=8.25e-08
+Hq=24 R=1 splits=2: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=7.57e-08
+Hq=24 R=1 splits=2: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=7.57e-08
+Hq=24 R=1 splits=2: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=7.57e-08
+Hq=24 R=1 splits=2: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=24 fp64_scaled_error=0
+Hq=24 R=1 splits=3: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=1.06e-07
+Hq=24 R=1 splits=3: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=9.04e-08
+Hq=24 R=1 splits=3: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=7.57e-08
+Hq=24 R=1 splits=3: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=7.45e-08
+Hq=24 R=1 splits=3: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=24 fp64_scaled_error=0
+Hq=24 R=1 splits=4: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=1.29e-07
+Hq=24 R=1 splits=4: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=9.04e-08
+Hq=24 R=1 splits=4: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=8.77e-08
+Hq=24 R=1 splits=4: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=7.09e-08
+Hq=24 R=1 splits=4: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=24 fp64_scaled_error=0
+Hq=24 R=1 splits=7: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=1.07e-07
+Hq=24 R=1 splits=7: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=1.04e-07
+Hq=24 R=1 splits=7: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=7.68e-08
+Hq=24 R=1 splits=7: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=0 fp64_scaled_error=6.82e-08
+Hq=24 R=1 splits=7: bitwise_diff=0 nonfinite_mismatch=0 guard_errors=0 empty_rows=24 fp64_scaled_error=0
+25 cases, 0 failures
