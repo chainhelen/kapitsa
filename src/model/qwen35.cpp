@@ -424,7 +424,7 @@ void Qwen35::prewarm_pipelines() {
   std::set<std::string> names = {"embed_q4", "rows_to_half", "attn_prep", "attn_prefill11", "attn_prefill11r", "swiglu_half",
                                  "moe_topk_rows", "moe_topk_rows8", "moe_bucket", "moe_bucket2", "moe_bucket3", "moe_combine", "copy_u32", "kv_copy_prefix",
                                  "gdn_prep_par", "gdn_step_par_l16", "gdn_step_parr4_l16", "gdn_gnorm", "topk_stage1",
-                                 "sample_stage2",
+                                 "sample_stage2", "topk_stage1_rows_sg",
                                  "qmr_k32_w14_m32_n128", "qmr_k64_w14_m16_n64", "qmr_k64_w12_m8_n64",
                                  "qmr_gu_k32_w14_m32_n64", "qmr_gu_k64_w14_m16_n64", "qmr_gu_k64_w12_m8_n32",
                                  "qmm_b8_m32_n32", "qmm_moe_gu_b4_m64_n32", "qmm_moe_dn_b4_m64_n64"};
@@ -2381,6 +2381,7 @@ void Qwen35::encode_step(Encoder& e, Seq& s, int pos, const SamplingParams& sp, 
 
 void Qwen35::enc_sample(Encoder& e, Seq& s, const Buffer& xrow, int out_index, const SamplingParams& sp, uint32_t step) {
   static Pipeline st1 = Gpu::get().pipeline("topk_stage1");
+  static Pipeline st1_sg = Gpu::get().pipeline("topk_stage1_rows_sg");
   static Pipeline st2 = Gpu::get().pipeline("sample_stage2");
   enc_qmv(e, lm_head_, xrow, logits_, nullptr, final_norm_);
   enc_logit_mask(e, s, logits_, 1, cfg_.vocab, cfg_.vocab);  // structured output (nothing without masks)
@@ -2388,7 +2389,9 @@ void Qwen35::enc_sample(Encoder& e, Seq& s, const Buffer& xrow, int out_index, c
   uint32_t K = sp.temperature > 0 ? uint32_t(std::clamp(sp.top_k <= 0 ? 32 : sp.top_k, 1, 32)) : 1u;
   kp::TopkStage ts{uint32_t(cfg_.vocab), K, 2048};
   uint32_t ntg = (cfg_.vocab + 2047) / 2048;
-  e.use(st1);
+  // Independent SIMD selection and a merge avoid a threadgroup barrier per top-k rank.
+  // Keep the small-k path; both kernels emit the same sorted lists.
+  e.use(K >= 8 ? st1_sg : st1);
   e.buf(0, logits_); e.buf(1, cand_v_); e.buf(2, cand_i_);
   e.val(3, ts);
   e.dispatch(ntg, 1, 1, 256);
