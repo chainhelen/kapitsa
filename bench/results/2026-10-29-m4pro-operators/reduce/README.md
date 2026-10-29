@@ -1,7 +1,9 @@
-# reduce experiment
+# Shared decode reduction: results
 
-Base: 4256a5119bd093f6088bd46943aaacf5cc60d48a. Apple M4 Pro, 20 GPU cores, 48 GB, macOS 15.7.1 (24G231), AC power.
+Runs: main `4256a51` vs native candidate `8ea1723`; Apple M4 Pro, 20 GPU cores, 48 GB, macOS 15.7.1 (24G231), AC power.
 
-Isolated GPU command timings, not kapitsa bench or full-request speedups. A is the unmodified reference kernel; B is the candidate. Six interleaved pairs per shape after warmup; every measured sample is in bench.jsonl. Thermal state is captured with each sample. ChatGPT/Codex remained open as requested.
+`bench.jsonl` and `model-validation/clean-bench.jsonl` retain both isolated-kernel sessions, six interleaved A/B pairs per shape. These timings do not establish a whole-request speedup.
 
-Small cases used MTL_SHADER_VALIDATION=1 MTL_DEBUG_LAYER=1 before unrestricted sizes. Model-level checks are recorded separately, if run.
+[Validation and reproduction](model-validation/VALIDATION.md) includes all four standard request legs, output checks, and the ordinary-decode supplement. Numerical records retained here are unchanged.
+
+[Complete original evidence](https://github.com/chainhelen/kapitsa/tree/5554eb32398076dddbecd6b2193b57eefb56b5aa/bench/results/2026-10-29-m4pro-operators/reduce) is preserved on `chainhelen/kapitsa`, branch `archive/decode-reduce-full-evidence-20261029` (pinned commit `5554eb32398076dddbecd6b2193b57eefb56b5aa`). It contains the full build/CPU/API logs, standard benchmark JSONs, both ordinary-decode attempts, prompts and generated outputs.

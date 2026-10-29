@@ -10,11 +10,11 @@ Default output check: all 584 rows bitwise identical. Synthetic 64K stress check
 
 All 27 CPU check groups passed on the first run. The installed model tokenizer's grammar/mask test and final prek also passed.
 
-API: candidate and main both passed 48/49. The same keepalive fixture fails: holder requests stop after two tokens, freeing slots before its expected 15-second keepalive. Logs are included; no test was weakened.
+API: candidate and main both passed 48/49. The same keepalive fixture fails: holder requests stop after two tokens, freeing slots before its expected 15-second keepalive. Full candidate/main logs are in the [archived evidence](https://github.com/chainhelen/kapitsa/tree/5554eb32398076dddbecd6b2193b57eefb56b5aa/bench/results/2026-10-29-m4pro-operators/reduce/model-validation).
 
 ## Standard request benchmark
 
-Produced by unmodified `kapitsa bench --quick --json`, A/B/A/B, with a fresh KAPITSA_HOME per run. The benchmark filters NI_DFLASH/NI_NO_MTP, so all these runs use default KFlash/DFlash2. Every JSON includes all individual samples, hardware, version, flags and conditions. All were valid, tools passed, swapouts were zero, and contention lists were empty. ChatGPT was retained; its detected GPU activity is shown. Thermal state varies between nominal and fair; no reproducible whole-request speedup is claimed.
+Produced by unmodified `kapitsa bench --quick --json`, A/B/A/B, with a fresh KAPITSA_HOME per run. The benchmark filters NI_DFLASH/NI_NO_MTP, so all these runs use default KFlash/DFlash2. The [archived benchmark JSONs](https://github.com/chainhelen/kapitsa/tree/5554eb32398076dddbecd6b2193b57eefb56b5aa/bench/results/2026-10-29-m4pro-operators/reduce/model-validation) include all individual samples, hardware, version, flags and conditions. All were valid, tools passed, swapouts were zero, and contention lists were empty. ChatGPT was retained; its detected GPU activity is shown. The standard legs below are all at fair thermal state; no reproducible whole-request speedup is claimed.
 
 | Run | Decode T=0.6 tok/s | Greedy tok/s | 4K TTFT s | Follow-up s | Thermal | Other GPU mean % |
 |---|---:|---:|---:|---:|---|---:|
@@ -27,7 +27,7 @@ Produced by unmodified `kapitsa bench --quick --json`, A/B/A/B, with a fresh KAP
 
 `tools/bench_plain_decode.py` starts the real HTTP server with `--spec 0 --slots 1 --context 8192`, holds the GPU lock, warms up, and measures one 2957-token prompt / 512-token greedy answer per leg. All four outputs were nonempty, ended at the length limit, had identical SHA-256, and reported draft source `none`. Throughput does not show a reproducible request-level gain.
 
-The first attempt is retained in plain-v1: B2 compiled its ANE program asynchronously for ~35 s, contaminating startup/prefill timing. The tool now waits for ANE readiness; plain-v2 is the rerun. Thermal values below use NSProcessInfo: 0 nominal, 1 fair. B2 warms to fair, so sub-percent throughput differences must not be interpreted as a speedup.
+The first attempt is retained in the archive at [plain-v1](https://github.com/chainhelen/kapitsa/tree/5554eb32398076dddbecd6b2193b57eefb56b5aa/bench/results/2026-10-29-m4pro-operators/reduce/model-validation/plain-v1): B2 compiled its ANE program asynchronously for ~35 s, contaminating startup/prefill timing. The tool now waits for ANE readiness; plain-v2 is the rerun. Its four JSON records remain here; prompts and generated text are in the [archive](https://github.com/chainhelen/kapitsa/tree/5554eb32398076dddbecd6b2193b57eefb56b5aa/bench/results/2026-10-29-m4pro-operators/reduce/model-validation/plain-v2). Thermal values below use NSProcessInfo: 0 nominal, 1 fair. B2 warms to fair, so sub-percent throughput differences must not be interpreted as a speedup.
 
 | Run | Decode tok/s | Prefill ms | Thermal before → after |
 |---|---:|---:|---|
@@ -39,7 +39,8 @@ The first attempt is retained in plain-v1: B2 compiled its ANE program asynchron
 Reproduce (OUT must not exist):
 
 ```sh
-python3 tools/bench_plain_decode.py --reference /path/to/main/build/kapitsa --candidate build/kapitsa --model /path/to/qwen3.8-27b-4bit --prompt bench/results/2026-10-29-m4pro-operators/reduce/model-validation/plain-v2/prompt.txt --out /tmp/kapitsa-plain-new
+curl -fL https://raw.githubusercontent.com/chainhelen/kapitsa/5554eb32398076dddbecd6b2193b57eefb56b5aa/bench/results/2026-10-29-m4pro-operators/reduce/model-validation/plain-v2/prompt.txt -o /tmp/kapitsa-reduce-prompt.txt
+python3 tools/bench_plain_decode.py --reference /path/to/main/build/kapitsa --candidate build/kapitsa --model /path/to/qwen3.8-27b-4bit --prompt /tmp/kapitsa-reduce-prompt.txt --out /tmp/kapitsa-plain-new
 ```
 
 ## Not verified
