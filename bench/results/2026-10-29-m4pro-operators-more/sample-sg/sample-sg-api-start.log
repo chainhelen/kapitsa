@@ -1,2 +1,0 @@
-starting: lockf /tmp/kapitsa-gpu.lock kapitsa serve --model /Users/bytedance/.cache/kapitsa/models/qwen3.8-27b-4bit --port 18129  (log: /tmp/verify-kapitsa/evidence/kapitsa-perf-sample-sg-a0a234/7062e9d1/serve.log)
-ready: http://127.0.0.1:18129 (pid 72938)

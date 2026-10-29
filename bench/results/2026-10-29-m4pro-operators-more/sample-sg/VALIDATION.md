@@ -1,12 +1,14 @@
-## What changed and why
+# Validation
 
-Qwen35's ordinary sampled decode uses the existing `topk_stage1_rows_sg` for K >= 8. The candidate lists keep the same order; greedy and smaller K retain `topk_stage1`. Stage 2, RNG, and speculative-verifier dispatches are unchanged.
+Native code tested: `7062e9d1105fc92eda34b173aa792ad7b5cb0bb8`, against main `4256a5119bd093f6088bd46943aaacf5cc60d48a`. Later evidence/tool commits do not alter `src/` or CMake.
 
-## Measured
+Runs: Apple M4 Pro (20 GPU cores), 48 GB, macOS 15.7.1 (24G231), Qwen3.8-27B-4bit, AC power. Kapitsa 0.2.24; default Metal arithmetic and unchanged numerical floors. ChatGPT remained running.
 
-Stage 1 over a 248,320-token vocabulary, K=32, one row. This is selection time, not complete token latency. In the final repeat, median isolated, warm-buffer GPU command-buffer time is 46.232 → 36.325 µs (21.4% lower). The test prints all six interleaved A/B pairs for every shape; initial experiments and repeats are retained.
+## Operator measurement
 
-Runs: Apple M4 Pro, 20 GPU cores, 48 GB, macOS 15.7.1 (24G231), AC power, Qwen3.8-27B-4bit. Main `4256a51`, native candidate `7062e9d`. Kapitsa 0.2.24. Flags: default Metal arithmetic, unchanged numerical floors.
+Ordinary sampled decode reuses `topk_stage1_rows_sg` when K >= 8. Greedy/smaller K, stage 2, RNG and speculative-verifier dispatches are unchanged.
+
+`sample-sg-micro-final.jsonl` retains the complete final session: six interleaved A/B pairs for every measured shape and stage, including small-K controls. For one row, vocabulary 248,320, K=32, isolated warm-buffer stage-1 GPU time fell from median 46.232 to 36.325 µs (21.4%). This is selection time, not complete token latency. Initial sessions [v1](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/sample-sg-micro-v1.jsonl) and [v2](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/sample-sg-micro-v2.jsonl) remain available with every original sample.
 
 | Pair (A then B) | Main µs | Candidate µs | Thermal A / B |
 |---|---:|---:|---|
@@ -17,7 +19,9 @@ Runs: Apple M4 Pro, 20 GPU cores, 48 GB, macOS 15.7.1 (24G231), AC power, Qwen3.
 | 5 | 45.744 | 36.337 | nominal / nominal |
 | 6 | 46.228 | 36.578 | nominal / nominal |
 
-Unmodified `kapitsa bench --quick --json` produced the following default DFlash2 runs (fresh `KAPITSA_HOME` per leg). The operator measurements do not establish a whole-request speedup. All original JSONs include individual samples and conditions; ChatGPT remained running. The default drafter is `/Users/bytedance/.cache/kapitsa/models/qwen3.8-27b-4bit/dflash2`, weights SHA-256 `67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c` (the exact checksum is verified in the committed run evidence).
+## Standard request benchmark
+
+Unmodified `kapitsa bench --quick --json`, A/B/A/B, with a fresh `KAPITSA_HOME` per leg. Default DFlash2 is used; its weights SHA-256 is retained in `dflash-sha256.txt`. These runs do not establish a whole-request speedup. All runs were valid, tools passed, swapouts were zero and contention lists were empty. The [complete JSONs and stdout/stderr](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/) retain individual samples, hardware, commits, flags and conditions.
 
 | Run | T=0.6 tok/s | Greedy tok/s | 4K TTFT s | Follow-up s | Thermal | Other GPU mean % |
 |---|---:|---:|---:|---:|---|---:|
@@ -28,7 +32,7 @@ Unmodified `kapitsa bench --quick --json` produced the following default DFlash2
 
 ## Sampled single-row decoding
 
-`tools/bench_sample_decode.py` uses the actual HTTP server with `--spec 0`, temperature 0.7, top-k 32 and seed 42. It waits for the ANE background program before warmup. All four outputs are nonempty, reach 512 tokens, have identical SHA-256, and report drafter source `none`. This explicitly engages the changed sampling dispatch; the default speculative benchmark alone does not.
+`tools/bench_sample_decode.py` starts the real HTTP server with `--spec 0`, temperature 0.7, top-k 32 and seed 42, waits for ANE readiness, warms up, then measures a 2,957-token prompt and a 512-token answer. This engages the changed dispatch; the default speculative benchmark alone does not. All four outputs were nonempty, reached the length limit, matched by SHA-256 and reported drafter source `none`. No whole-request speedup is claimed.
 
 | Run | Output tokens | Decode tok/s | Prefill ms | Thermal before → after |
 |---|---:|---:|---:|---|
@@ -37,41 +41,31 @@ Unmodified `kapitsa bench --quick --json` produced the following default DFlash2
 | A2 | 512 | 15.592 | 7700.7 | 1 → 1 |
 | B2 | 512 | 15.614 | 7699.4 | 1 → 1 |
 
-## Checked
+Thermal values use NSProcessInfo: 0 nominal, 1 fair. The [four original JSONs, server logs, prompt and generated text](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/sampled-plain/) are preserved unchanged. Output SHA-256: `44992aeef137b8b91487c87ed994b894022ffee4e1cbab2a699b3560b482414d`.
 
-- `sample_reduce_test --gpu --small` under `MTL_SHADER_VALIDATION=1 MTL_DEBUG_LAYER=1`, then `--gpu`: 360 cases, zero failures. Checks include the original kernel, independent CPU reference, tails/ties where applicable, and output guards.
-- Default 27B output gate: all 584 rows bitwise identical to main (8 prefill + 192 step + 192 verify + 192 batch). Floors were not changed.
-- All 27 CPU check groups, the installed-model tokenizer grammar/mask checks, and `prek run --all-files` passed. Named targets were built on the macOS 15 SDK.
-- API: 48/49, with the same keepalive-fixture failure reproduced on main in the earlier control. Its holder prompts end after two tokens, so the waiter receives a token before the expected 15-second keepalive.
+## Correctness and checks
 
-Evidence: `bench/results/2026-10-29-m4pro-operators-more/sample-sg/`.
+- `sample_reduce_test --gpu --small` with `MTL_SHADER_VALIDATION=1 MTL_DEBUG_LAYER=1`: 135 cases, zero failures ([log](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/sample-sg-final-validation.log)); then `--gpu`: 360 cases, zero failures ([log](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/sample-sg-final-correctness.log)). Checks compare the original kernel, an independent CPU reference, candidate order, sampling results and guards, including tails, ties, NaN/inf and signed zero.
+- Default 27B output gate: all 584 rows bitwise identical (8 prefill + 192 step + 192 verify + 192 batch). `sample-sg-logit-compare.txt` retains the complete comparison; [metadata](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/logit-metadata/) is archived.
+- All 27 CPU groups passed (`cpu/summary.txt`); the installed-model tokenizer grammar/mask checks and `prek run --all-files` passed. [Full CPU, build and lint logs](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/) are preserved. Named targets were built on the macOS 15 SDK.
+- API: 48/49 on candidate and main. The same keepalive fixture ends its holder requests after two tokens, freeing slots before the expected 15-second keepalive. [Candidate](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/sample-sg-api-tests.txt) and [earlier main control](https://github.com/chainhelen/kapitsa/tree/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/main-api-control-earlier.txt) include the failure; server logs are alongside them.
 
-<details>
-<summary>Default logit comparison</summary>
+## Reproduce
 
-```text
-prefill: 8 records (qwen3.8-27b-4bit)
-  reference: 0.2.24 (4256a51), prefill_chunk 2048, ane {"chunks":10,"evals":1152,"reruns":0}
-  candidate: 0.2.24 (7062e9d), prefill_chunk 2048, ane {"chunks":10,"evals":1152,"reruns":0}
-  every row bitwise identical
-batch: 192 records (qwen3.8-27b-4bit)
-  reference: 0.2.24 (4256a51), batch {"members":4,"rows":2}, prefill_chunk 2048, ane {"chunks":10,"evals":1152,"reruns":0}
-  candidate: 0.2.24 (7062e9d), batch {"members":4,"rows":2}, prefill_chunk 2048, ane {"chunks":10,"evals":1152,"reruns":0}
-  every row bitwise identical
-  PASS (../kapitsa-perf-sample-sg/tools/logit_floors/qwen3.8-27b-4bit.json: the decode passes' gate (the prefill rows are bitwise the same))
-step: 192 records (qwen3.8-27b-4bit)
-  reference: 0.2.24 (4256a51), prefill_chunk 2048, ane {"chunks":10,"evals":1152,"reruns":0}
-  candidate: 0.2.24 (7062e9d), prefill_chunk 2048, ane {"chunks":10,"evals":1152,"reruns":0}
-  every row bitwise identical
-  PASS (../kapitsa-perf-sample-sg/tools/logit_floors/qwen3.8-27b-4bit.json: the decode passes' gate (the prefill rows are bitwise the same))
-verify: 192 records (qwen3.8-27b-4bit)
-  reference: 0.2.24 (4256a51), verify "KFlash tree (a chain of 8 live rows)", prefill_chunk 2048, ane {"chunks":10,"evals":1152,"reruns":0}
-  candidate: 0.2.24 (7062e9d), verify "KFlash tree (a chain of 8 live rows)", prefill_chunk 2048, ane {"chunks":10,"evals":1152,"reruns":0}
-  every row bitwise identical
-  PASS (../kapitsa-perf-sample-sg/tools/logit_floors/qwen3.8-27b-4bit.json: the decode passes' gate (the prefill rows are bitwise the same))
+Build main and candidate in separate checkouts. GPU commands take the standard GPU lock; run them one at a time on an idle GPU. The script refuses to overwrite an existing output directory.
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j --target kapitsa sample_reduce_test
+MTL_SHADER_VALIDATION=1 MTL_DEBUG_LAYER=1 build/sample_reduce_test --gpu --small
+build/sample_reduce_test --gpu
+build/sample_reduce_test --bench
+curl -fL https://raw.githubusercontent.com/chainhelen/kapitsa/045d9e0a3ab5d7b0fe59322c901b0c1eed5e3691/bench/results/2026-10-29-m4pro-operators-more/sample-sg/sampled-plain/prompt.txt -o /tmp/kapitsa-sample-prompt.txt
+python3 tools/bench_sample_decode.py --reference /path/to/main/build/kapitsa --candidate build/kapitsa --model /path/to/qwen3.8-27b-4bit --prompt /tmp/kapitsa-sample-prompt.txt --out /tmp/kapitsa-sample-new
 ```
-</details>
+
+The archived prompt SHA-256 is `6f004e0a164073a1d04d5d84ce8aea4aed706825b342e3a5c09348d0682c542e`, matching all four HTTP records.
 
 ## Not verified
 
-Qwen3.5-4B and Qwen3.6-35B-A3B/MoE (not installed), other Apple chips/macOS versions, Metal-4-only tools, and real image end-to-end requests. Measured gains are for the stated operator shapes and paths, not a general request-speed claim.
+Qwen3.5-4B and Qwen3.6-35B-A3B/MoE (not installed), other Apple chips/macOS versions, Metal-4-only tools and real image end-to-end requests.
