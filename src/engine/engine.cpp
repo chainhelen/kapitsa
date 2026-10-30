@@ -719,7 +719,10 @@ std::string unsupported_model(const std::string& model_dir) {
   const nlohmann::json t = j.contains("text_config") && j["text_config"].is_object() ? j["text_config"] : j;
   const std::string mt = type(j), tt = type(t);
   // (a pack in a quantization format with no kernels is refused here too: before its weights are read, not after)
+  // (and a noncausal pack, which only kapitsa-systemone scores: thrown here, so a model switch is refused and the old
+  // model stays up, and the memory plan is not read first)
   auto family = [&] {
+    if (!t.value("causal", true)) return Qwen35::noncausal_refusal(model_dir);
     const std::string why = unsupported_quantization(model_dir);
     return why.empty() ? why : model_dir + ": " + why;
   };

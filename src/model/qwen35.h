@@ -85,6 +85,7 @@ struct Qwen35Config {
   // Gated DeltaNet
   int lin_hk = 0, lin_hv = 0, lin_dk = 0, lin_dv = 0, conv_k = 4;
   // full attention
+  bool causal = true;
   int hq = 0, hkv = 0, head_dim = 0, rot_dims = 0;
   float theta = 1e7f, eps = 1e-6f;
   int mrope[3] = {11, 11, 10};  // M-RoPE (images): rotary frequencies per (t, h, w) axis, interleaved
@@ -238,6 +239,10 @@ class Qwen35 : public Model {
   // rows16: the engine will draft with a 16-row block (one slot), whose verify rows the live state's tape is sized for
   static MemPlan plan(const std::string& model_dir, int prefill_chunk = 2048, bool rows16 = false);
   static Qwen35Config read_config(const std::string& model_dir);  // config.json only
+  // Exits for a noncausal (bidirectional) pack, before any weight is read: kapitsa serve/run/chat decode token by
+  // token and cannot run one; only kapitsa-systemone scores it.
+  static void require_causal(const std::string& model_dir);
+  static std::string noncausal_refusal(const std::string& model_dir);  // the message both refusals use
   // Whether n RMSNorm weight values (F32, F16 or BF16 at data) are Hugging Face's zero-centred parameterization, applied
   // as 1 + w: a mean below 0.5 and at least one negative value (MLX's are ~1 and all positive). False for no values, a
   // vector wider than 65,536 (not a norm) or another dtype, where the caller keeps its own answer.
