@@ -1,6 +1,0 @@
-main copy-b exit 0 Deleted /var/folders/bv/2dmpdk3552gd42p15z1sw9xm0000gn/T/kapitsa-apfs-repro-kek7ndjs/models/copy-b (nothing freed: its files are shared with another copy). 
-main copy-a exit 0 Deleted /var/folders/bv/2dmpdk3552gd42p15z1sw9xm0000gn/T/kapitsa-apfs-repro-kek7ndjs/models/copy-a (21 MB freed). 
-rope copy-b exit 0 Deleted /var/folders/bv/2dmpdk3552gd42p15z1sw9xm0000gn/T/kapitsa-apfs-repro-yet0f9i2/models/copy-b (nothing freed: its files are shared with another copy). 
-rope copy-a exit 0 Deleted /var/folders/bv/2dmpdk3552gd42p15z1sw9xm0000gn/T/kapitsa-apfs-repro-yet0f9i2/models/copy-a (21 MB freed). 
-reduce copy-b exit 0 Deleted /var/folders/bv/2dmpdk3552gd42p15z1sw9xm0000gn/T/kapitsa-apfs-repro-a8fsng3m/models/copy-b (nothing freed: its files are shared with another copy). 
-reduce copy-a exit 0 Deleted /var/folders/bv/2dmpdk3552gd42p15z1sw9xm0000gn/T/kapitsa-apfs-repro-a8fsng3m/models/copy-a (21 MB freed). 

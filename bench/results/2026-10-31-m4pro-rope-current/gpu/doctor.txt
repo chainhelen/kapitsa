@@ -1,8 +1,0 @@
-checkout:  /Users/bytedance/Documents/ChatGPT/blog/kapitsa-perf-rope (perf/rope-paired-current @ 1b89569a)
-run:       candidate
-evidence:  /Users/bytedance/Documents/ChatGPT/blog/work/rope-current-20261031/candidate/1b89569a
-binary:    kapitsa 0.2.25 (1b89569)
-  STALE: build/kapitsa is not HEAD's build; run: vk build
-mac:       Apple M4 Pro, macOS 15.7.1 (24G231)
-gpu lock:  /tmp/kapitsa-gpu.lock free
-server:    none started by this run
