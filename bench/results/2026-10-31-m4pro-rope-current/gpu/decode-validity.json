@@ -1,0 +1,466 @@
+[
+  {
+    "run": "A1",
+    "samples": [
+      [
+        "0.6",
+        "59.42",
+        "512",
+        "length"
+      ],
+      [
+        "0.6",
+        "57.57",
+        "512",
+        "length"
+      ],
+      [
+        "0.6",
+        "61.28",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "64.30",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "62.25",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "63.58",
+        "512",
+        "length"
+      ]
+    ],
+    "server_cycles": [
+      [
+        "5.16",
+        "99"
+      ],
+      [
+        "4.96",
+        "103"
+      ],
+      [
+        "5.16",
+        "99"
+      ],
+      [
+        "5.38",
+        "95"
+      ],
+      [
+        "5.21",
+        "98"
+      ],
+      [
+        "5.32",
+        "96"
+      ]
+    ],
+    "drafter": {
+      "name": "qwen3.8-27b-4bit",
+      "title": "qwen3.8-27b-4bit",
+      "variant": null,
+      "precision": "4-bit",
+      "catalog": false,
+      "revision": null,
+      "decoding": "KFlash",
+      "decoding_detail": "KFlash speculative decoding (DFlash2 lattice, tree verify), KFlash (DFlash2)",
+      "drafter": "dflash2",
+      "drafter_kind": "DFlash2",
+      "drafter_source": "dflash2",
+      "drafter_reason": "found in the model's folder"
+    },
+    "conditions": {
+      "power_source": "ac",
+      "power_mode": "automatic",
+      "low_power_mode": false,
+      "thermal_state": "fair",
+      "swapouts": 0,
+      "gpu_quiet_wait_s": 18.1,
+      "gpu_other_mean_pct": 0.03,
+      "gpu_other_max_pct": 0.65,
+      "gpu_ambient_mean_pct": 0.0,
+      "gpu_users": [],
+      "contention": []
+    },
+    "accepted": {
+      "decode": {
+        "median_tps": 59.42,
+        "runs_tps": [
+          59.42,
+          57.57,
+          61.28
+        ],
+        "median_accepted_draft_tps": 47.82,
+        "median_accepted_draft_share": 0.8047
+      },
+      "decode_greedy": {
+        "median_tps": 63.58,
+        "runs_tps": [
+          64.3,
+          62.25,
+          63.58
+        ],
+        "median_accepted_draft_tps": 51.53,
+        "median_accepted_draft_share": 0.8105
+      }
+    }
+  },
+  {
+    "run": "B1",
+    "samples": [
+      [
+        "0.6",
+        "52.88",
+        "512",
+        "length"
+      ],
+      [
+        "0.6",
+        "58.11",
+        "512",
+        "length"
+      ],
+      [
+        "0.6",
+        "60.20",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "63.30",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "63.66",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "62.76",
+        "512",
+        "length"
+      ]
+    ],
+    "server_cycles": [
+      [
+        "4.48",
+        "114"
+      ],
+      [
+        "5.01",
+        "102"
+      ],
+      [
+        "5.11",
+        "100"
+      ],
+      [
+        "5.32",
+        "96"
+      ],
+      [
+        "5.32",
+        "96"
+      ],
+      [
+        "5.27",
+        "97"
+      ]
+    ],
+    "drafter": {
+      "name": "qwen3.8-27b-4bit",
+      "title": "qwen3.8-27b-4bit",
+      "variant": null,
+      "precision": "4-bit",
+      "catalog": false,
+      "revision": null,
+      "decoding": "KFlash",
+      "decoding_detail": "KFlash speculative decoding (DFlash2 lattice, tree verify), KFlash (DFlash2)",
+      "drafter": "dflash2",
+      "drafter_kind": "DFlash2",
+      "drafter_source": "dflash2",
+      "drafter_reason": "found in the model's folder"
+    },
+    "conditions": {
+      "power_source": "ac",
+      "power_mode": "automatic",
+      "low_power_mode": false,
+      "thermal_state": "fair",
+      "swapouts": 0,
+      "gpu_quiet_wait_s": 18.1,
+      "gpu_other_mean_pct": 0.0,
+      "gpu_other_max_pct": 0.0,
+      "gpu_ambient_mean_pct": 0.0,
+      "gpu_users": [],
+      "contention": []
+    },
+    "accepted": {
+      "decode": {
+        "median_tps": 58.11,
+        "runs_tps": [
+          52.88,
+          58.11,
+          60.2
+        ],
+        "median_accepted_draft_tps": 46.42,
+        "median_accepted_draft_share": 0.7988
+      },
+      "decode_greedy": {
+        "median_tps": 63.3,
+        "runs_tps": [
+          63.3,
+          63.66,
+          62.76
+        ],
+        "median_accepted_draft_tps": 51.31,
+        "median_accepted_draft_share": 0.8105
+      }
+    }
+  },
+  {
+    "run": "A2",
+    "samples": [
+      [
+        "0.6",
+        "55.99",
+        "512",
+        "length"
+      ],
+      [
+        "0.6",
+        "62.74",
+        "512",
+        "length"
+      ],
+      [
+        "0.6",
+        "57.16",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "62.16",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "61.93",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "62.72",
+        "512",
+        "length"
+      ]
+    ],
+    "server_cycles": [
+      [
+        "4.73",
+        "108"
+      ],
+      [
+        "5.32",
+        "96"
+      ],
+      [
+        "4.91",
+        "104"
+      ],
+      [
+        "5.21",
+        "98"
+      ],
+      [
+        "5.21",
+        "98"
+      ],
+      [
+        "5.27",
+        "97"
+      ]
+    ],
+    "drafter": {
+      "name": "qwen3.8-27b-4bit",
+      "title": "qwen3.8-27b-4bit",
+      "variant": null,
+      "precision": "4-bit",
+      "catalog": false,
+      "revision": null,
+      "decoding": "KFlash",
+      "decoding_detail": "KFlash speculative decoding (DFlash2 lattice, tree verify), KFlash (DFlash2)",
+      "drafter": "dflash2",
+      "drafter_kind": "DFlash2",
+      "drafter_source": "dflash2",
+      "drafter_reason": "found in the model's folder"
+    },
+    "conditions": {
+      "power_source": "ac",
+      "power_mode": "automatic",
+      "low_power_mode": false,
+      "thermal_state": "fair",
+      "swapouts": 0,
+      "gpu_quiet_wait_s": 18.1,
+      "gpu_other_mean_pct": 0.03,
+      "gpu_other_max_pct": 0.63,
+      "gpu_ambient_mean_pct": 0.0,
+      "gpu_users": [],
+      "contention": []
+    },
+    "accepted": {
+      "decode": {
+        "median_tps": 57.16,
+        "runs_tps": [
+          55.99,
+          62.74,
+          57.16
+        ],
+        "median_accepted_draft_tps": 45.44,
+        "median_accepted_draft_share": 0.7949
+      },
+      "decode_greedy": {
+        "median_tps": 62.16,
+        "runs_tps": [
+          62.16,
+          61.93,
+          62.72
+        ],
+        "median_accepted_draft_tps": 50.14,
+        "median_accepted_draft_share": 0.8066
+      }
+    }
+  },
+  {
+    "run": "B2",
+    "samples": [
+      [
+        "0.6",
+        "60.38",
+        "512",
+        "length"
+      ],
+      [
+        "0.6",
+        "59.70",
+        "512",
+        "length"
+      ],
+      [
+        "0.6",
+        "59.56",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "63.70",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "64.64",
+        "512",
+        "length"
+      ],
+      [
+        "0",
+        "64.65",
+        "512",
+        "length"
+      ]
+    ],
+    "server_cycles": [
+      [
+        "5.16",
+        "99"
+      ],
+      [
+        "4.91",
+        "104"
+      ],
+      [
+        "5.06",
+        "101"
+      ],
+      [
+        "5.32",
+        "96"
+      ],
+      [
+        "5.38",
+        "95"
+      ],
+      [
+        "5.38",
+        "95"
+      ]
+    ],
+    "drafter": {
+      "name": "qwen3.8-27b-4bit",
+      "title": "qwen3.8-27b-4bit",
+      "variant": null,
+      "precision": "4-bit",
+      "catalog": false,
+      "revision": null,
+      "decoding": "KFlash",
+      "decoding_detail": "KFlash speculative decoding (DFlash2 lattice, tree verify), KFlash (DFlash2)",
+      "drafter": "dflash2",
+      "drafter_kind": "DFlash2",
+      "drafter_source": "dflash2",
+      "drafter_reason": "found in the model's folder"
+    },
+    "conditions": {
+      "power_source": "ac",
+      "power_mode": "automatic",
+      "low_power_mode": false,
+      "thermal_state": "fair",
+      "swapouts": 0,
+      "gpu_quiet_wait_s": 18.1,
+      "gpu_other_mean_pct": 0.03,
+      "gpu_other_max_pct": 0.7,
+      "gpu_ambient_mean_pct": 0.0,
+      "gpu_users": [],
+      "contention": []
+    },
+    "accepted": {
+      "decode": {
+        "median_tps": 59.7,
+        "runs_tps": [
+          60.38,
+          59.7,
+          59.56
+        ],
+        "median_accepted_draft_tps": 47.69,
+        "median_accepted_draft_share": 0.8008
+      },
+      "decode_greedy": {
+        "median_tps": 64.64,
+        "runs_tps": [
+          63.7,
+          64.64,
+          64.65
+        ],
+        "median_accepted_draft_tps": 52.52,
+        "median_accepted_draft_share": 0.8125
+      }
+    }
+  }
+]

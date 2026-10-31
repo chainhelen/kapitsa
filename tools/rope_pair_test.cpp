@@ -22,7 +22,8 @@ int main(int argc, char** argv) {
   for (unsigned D : {64u, 128u, 256u, 512u}) for (unsigned T : {1u, 8u, 128u, 512u}) {
     if (small && (D > 128 || T > 8)) continue;
     if (bench && D != 256) continue;
-    for (unsigned rot : {0u, 32u, 64u}) for (unsigned mode : {0u, 1u, 2u}) {
+    for (unsigned rot : {0u, 2u, 32u, 64u, 128u, 256u, 512u}) for (unsigned mode : {0u, 1u, 2u}) {
+      if (rot > D) continue;
       if (bench && (rot != 64 || mode == 2)) continue;
       const unsigned Hq = 24, Hkv = 4, pos = small ? 3 : 257, cap = pos + T + 2;
       const size_t nq = size_t(T) * Hq * D, nk = size_t(T) * Hkv * D, cache = size_t(cap) * Hkv * D;

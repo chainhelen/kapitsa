@@ -1,4 +1,4 @@
-// Baseline kernels from 4256a5119bd093f6088bd46943aaacf5cc60d48a.
+// Baseline kernels from 15f8a57f (unchanged from 4256a511).
 static constexpr const char* reference_source = R"metal(
 [[kernel]] void attn_prep_reference(const device float* qg [[buffer(0)]], const device float* kr [[buffer(1)]],
                           const device float* vr [[buffer(2)]], const device bfloat* qn_w [[buffer(3)]],

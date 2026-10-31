@@ -1,0 +1,6 @@
+no server started by this run
+removed /tmp/verify-kapitsa/state/api-default-A; evidence kept in /Users/bytedance/Documents/ChatGPT/blog/work/rope-current-20261031/api-default-A/15f8a57f
+Default-slot API A exit 1
+no server started by this run
+removed /tmp/verify-kapitsa/state/api-default-B; evidence kept in /Users/bytedance/Documents/ChatGPT/blog/work/rope-current-20261031/api-default-B/1b89569a
+Default-slot API B exit 1

@@ -1,0 +1,2 @@
+starting: lockf /tmp/kapitsa-gpu.lock kapitsa serve --model /Users/bytedance/.cache/kapitsa/models/qwen3.8-27b-4bit --port 8092 --context 32k (log: /Users/bytedance/Documents/ChatGPT/blog/work/rope-current-20261031/api-default-A/15f8a57f/serve.log)
+ready: http://127.0.0.1:8092 (pid 49082)

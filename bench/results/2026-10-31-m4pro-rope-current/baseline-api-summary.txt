@@ -1,0 +1,3 @@
+no server started by this run
+removed /tmp/verify-kapitsa/state/baseline-api; evidence kept in /Users/bytedance/Documents/ChatGPT/blog/work/rope-current-20261031/baseline-api/15f8a57f
+Baseline API suite exit 1

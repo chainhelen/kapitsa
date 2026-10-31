@@ -1,0 +1,14 @@
+PASS small Metal validation
+PASS full kernel matrix
+PASS operator A/B 1
+PASS operator A/B 2
+PASS reference output dump
+PASS full output gate
+PASS 64K output gate
+PASS bench A1
+PASS bench B1
+PASS bench A2
+PASS bench B2
+API suite exit 1
+no server started by this run
+removed /tmp/verify-kapitsa/state/candidate; evidence kept in /Users/bytedance/Documents/ChatGPT/blog/work/rope-current-20261031/candidate/1b89569a

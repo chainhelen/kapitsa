@@ -1,0 +1,17 @@
+kapitsa bench: qwen3.8-27b-4bit 4-bit on MacBook Pro (16-inch, 2024): Apple M4 Pro, 20-core GPU, 48 GB, macOS 15.7.1, quick
+Starting the server on 127.0.0.1:54617 (log ~/Documents/ChatGPT/blog/work/rope-current-20261031/scratch/A1/logs/bench-54617-ctx32768.log)
+[?2026h  ✓ Loaded qwen3.8-27b-4bit  ·  4-bit in 9.4s  ·  KFlash speculative decoding …
+[?2026lReady after 9.4s: KFlash speculative decoding (DFlash2 lattice, tree verify), KFlash (DFlash2)
+Warm-up done in 29s
+GPU quiet after 18s
+  decode T=0.6: 59.42 tok/s (512 tok, finish="length")
+  decode T=0.6: 57.57 tok/s (512 tok, finish="length")
+  decode T=0.6: 61.28 tok/s (512 tok, finish="length")
+decode T=0.6: median 59.42 tok/s over 3/3 valid, accepted drafts 47.82 tok/s (80.5% of tokens)
+  decode T=0: 64.30 tok/s (512 tok, finish="length")
+  decode T=0: 62.25 tok/s (512 tok, finish="length")
+  decode T=0: 63.58 tok/s (512 tok, finish="length")
+decode T=0: median 63.58 tok/s over 3/3 valid, accepted drafts 51.53 tok/s (81.0% of tokens)
+prefill 4000: 4130 tok, 382 tok/s; cached TTFT median 0.24 s (95 tok/s on the uncached suffix)
+tools: pass
+Saved /Users/bytedance/Documents/ChatGPT/blog/work/rope-current-20261031/gpu/bench-A1.json
