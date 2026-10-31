@@ -602,6 +602,19 @@ void Qwen35::enc_rows_norm(Encoder& e, const Buffer& x, const Tensor* w, const B
 void Qwen35::enc_qmvr(Encoder& e, const QLinear& L, const Buffer& x, const Buffer& y, int R, bool add, uint32_t x_ld,
                       uint32_t y_ld) {
   if (R < 1 || R > kMaxVerify) fatal("qmvr: R=%d", R);
+  // Benchmark-only experiment: this changes the affine reduction and has no established end-to-end win.
+  // Limit it to the MTP head's Q/O projections; the trunk must keep its shipped verification kernels.
+  static const bool mtp_affine_rows = env_on("NI_MTP_AFFINE_ROWS");
+  if (mtp_affine_rows && (&L == &mtp_.q || &L == &mtp_.o) && R <= 2 &&
+      (L.bits == 5 || L.bits == 6) && L.gs == 64 && L.K % 64 == 0 &&
+      (!x_ld || x_ld % 4 == 0)) {
+    e.use(pipe2("qmvgrc_f" + std::to_string(L.bits) + "g64" + (R == 2 ? "_t2" : "")));
+    const kp::Qmvr p{L.N, L.K, uint32_t(R), x_ld ? x_ld : L.K, y_ld ? y_ld : L.N, add ? 1u : 0u};
+    e.buf(0, L.w->buf); e.buf(1, L.s->buf); e.buf(2, L.b->buf); e.buf(3, x); e.buf(4, y);
+    e.val(5, p);
+    e.dispatch(1, (L.N + 7) / 8, 1, 64);
+    return;
+  }
   // one row (a chained MTP draft pass): the decode matvecs (qmv2 / qmv3, in-place add)
   static const bool mtp_v8 = env_int("NI_MTP_V8", 1) != 0;
   if (mtp_v8 && R == 1 && (L.q4() || L.q8()) && (!x_ld || x_ld == L.K) && (!y_ld || y_ld == L.N)) {
