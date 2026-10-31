@@ -24,6 +24,7 @@ struct AttnPrepParams {
   const uint tid = tid2.x;
   threadgroup float scratch[32];
   threadgroup float row[512];
+  // One entry per rotary pair; rot <= D <= 512 (row[]), so half_rot <= 256.
   threadgroup float cosine[256], sine[256];
   const uint h = tg.x, t = tg.y, D = p.D;
   const uint pos = p.pos + t;
