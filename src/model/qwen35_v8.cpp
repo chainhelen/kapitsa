@@ -48,6 +48,9 @@ static int env_int(const char* n, int def) {
 bool Qwen35::v8_packed_coeff_on(const Qwen35Config& c) {
   const char* flag = getenv("NI_V8_PACKED_COEFF_NF1");
   if (flag && *flag && !atoi(flag)) return false;
+  // Experimental 9B coverage stays explicit; validate each M4 device before enabling a default.
+  if (!c.moe && c.hidden == 4096 && c.dense_I == 12288 && c.layers == 32 && c.group_size == 64)
+    return flag && *flag && atoi(flag) && Gpu::get().name().starts_with("Apple M4");
   if (c.moe || c.hidden != 2560 || c.dense_I != 9216 || c.layers != 32 || c.group_size != 64) return false;
   if (Gpu::get().name() != "Apple M4" || Gpu::get().core_count() != 10) return false;
   if (flag && *flag) return true;
@@ -75,11 +78,13 @@ void Qwen35::load_v8_packed_coeff() {
     compressed += image.compressed_blocks; blocks += image.blocks;
   };
   for (const Layer& l : layers_) {
+    // The 9B experiment packs only the long-K down projection.
+    if (cfg_.hidden == 4096) { pack(l.md); continue; }
     for (const QLinear* q : {&l.mg, &l.mu, &l.md}) pack(*q);
     if (l.linear) for (const QLinear* q : {&l.qkv, &l.z, &l.a, &l.b, &l.out}) pack(*q);
     else for (const QLinear* q : {&l.q, &l.k, &l.v, &l.o}) pack(*q);
   }
-  pack(lm_head_);
+  if (cfg_.hidden != 4096) pack(lm_head_);
   logi("NI_V8_PACKED_COEFF_NF1: packed %zu static target projections, %.1f MiB in %.0f ms; compressed %zu/%zu blocks",
        v8_packed_coeff_.size(), double(bytes) / (1024 * 1024), now_ms() - start, compressed, blocks);
 }
